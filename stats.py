@@ -7,12 +7,26 @@ import time
 import random
 import time
 
+import exslog
+try:
+    helpers.clear()
+    user_verbose = int(input("Set program verbosity\n0 - 3  a.k.a.  less - more\n( 0-3 ) >> "))
+
+except ValueError:
+    print("not a number")
+    exit()
+
+else:
+    success = exslog.Exslog("success", user_verbose)
+    error = exslog.Exslog("error", user_verbose)
+    info = exslog.Exslog("info", user_verbose)
+
 players = []
 try:
     for i in range(10):
         helpers.clear()
         
-        print(f"adding random players #{i}")
+        info.say(1, f"adding random players #{i}")
         players.append(helpers.random_number())
 
         time.sleep(random.uniform(0.1,0.4))
@@ -35,7 +49,7 @@ try:
                 players_amt = int(input("Amount >> "))
             
             except ValueError:
-                print("not a number")
+                error.say(0, "Not a number!")
                 exit()
             
             else:
@@ -49,7 +63,7 @@ try:
             stats.append(players_amt)
 
         case _:
-            print("bad choice")
+            error.say(0, "Bad choice!")
             exit()
 
 except KeyboardInterrupt:
@@ -57,13 +71,12 @@ except KeyboardInterrupt:
 
 
 def main() -> list:
-    
     error_msg = ""
     start = time.time()
 
     while True:
         helpers.clear()
-        print(f"Players: {players_amt}\n{error_msg}\n")
+        info.say(0, f"Players: {players_amt}\n{error_msg}\n")
         
         hand = helpers.all_hands()
 
@@ -71,15 +84,15 @@ def main() -> list:
             break
         
         elif hand == -1:
-            error_msg = "Error: wrong hand"
+            error_msg = error.say(0, "Wrong hand")
             continue
 
         elif hand > 9:
-            error_msg = "Error: too big [ 0-9 ]"
+            error_msg = error.say(0, "Too big hand [ 0-9 ]")
             continue
 
         elif 0 > hand:
-            error_msg = "Error: too small [ 0-9 ]"
+            error_msg = error.say(0, "Too small [ 0-9 ]")
             continue
         
         else:
@@ -111,7 +124,7 @@ if __name__ == "__main__":
 
         data = main()
         
-        print(f"elapsed time: {data[1]} seconds | {round(data[1]/60,2)} minutes | {round((data[1]/60)/60,2)} hours")
+        success.say(0, f"elapsed time: {data[1]} seconds | {round(data[1]/60,2)} minutes | {round((data[1]/60)/60,2)} hours")
     
     except KeyboardInterrupt:
         with open("pokerstats.txt", "a") as file:
